@@ -1,4 +1,4 @@
-# 🎮 Pong SOLID Refactored
+# 🎮 PingPong - Refatoração + SOLID
 
 Este projeto é uma refatoração do clássico jogo **Pong**, desenvolvida em **Python** com foco na aplicação dos princípios **SOLID** e boas práticas de engenharia de software.
 
