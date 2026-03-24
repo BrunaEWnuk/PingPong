@@ -9,7 +9,7 @@ class PongGame:
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((constants.LARGURA_TELA, constants.ALTURA_TELA))
-        pygame.display.set_caption("Pong SOLID")
+        pygame.display.set_caption("Ping Pong")
         self.clock = pygame.time.Clock()
         self.renderer = Renderer(self.screen)
         self.reset_game()
@@ -67,7 +67,7 @@ class PongGame:
             elif self.state == constants.GameState.JOGANDO:
                 self.renderer.draw_game(self.p1, self.p2, self.ball, self.score1, self.score2)
             elif self.state == constants.GameState.FIM_DE_JOGO:
-                winner = "Jogador 1" if self.score1 >= constants.PONTOS_PARA_VENCER else "IA"
+                winner = "Jogador 1" if self.score1 >= constants.PONTOS_PARA_VENCER else "Robot"
                 self.renderer.draw_game_over(winner)
 
             pygame.display.flip()
