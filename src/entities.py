@@ -25,8 +25,10 @@ class Paddle:
             self.rect.bottom = constants.ALTURA_TELA
 
 class Ball:
-    def __init__(self):
+    def __init__(self, color=constants.COR_ELEMENTOS, is_real=True):
         self.rect = pygame.Rect(0, 0, constants.TAMANHO_BOLA, constants.TAMANHO_BOLA)
+        self.color = color  
+        self.is_real = is_real
         self.vel_x = 0
         self.vel_y = 0
         self.reset(1)
@@ -42,6 +44,20 @@ class Ball:
 
         if self.rect.top <= 0 or self.rect.bottom >= constants.ALTURA_TELA:
             self.vel_y *= -1
+            self.apply_random_bounce()
+            return True
+        return False
 
     def bounce(self):
         self.vel_x *= -1.1
+        self.apply_random_bounce()
+
+    def apply_random_bounce(self):
+        variation = random.uniform(0.8, 1.2)
+        self.vel_y *= variation
+        
+        limit = constants.VELOCIDADE_INICIAL_BOLA * 2
+        if abs(self.vel_y) > limit:
+            self.vel_y = limit if self.vel_y > 0 else -limit
+        if abs(self.vel_y) < 2:
+            self.vel_y = 2 if self.vel_y > 0 else -2
