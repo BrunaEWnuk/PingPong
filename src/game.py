@@ -4,6 +4,7 @@ import random
 import src.constants as constants
 from src.entities import Paddle, Ball
 from src.renderer import Renderer
+from src.audio import AudioManager
 
 class PongGame:
     def __init__(self):
@@ -12,6 +13,7 @@ class PongGame:
         pygame.display.set_caption("Ping Pong")
         self.clock = pygame.time.Clock()
         self.renderer = Renderer(self.screen)
+        self.audio = AudioManager() 
         self.reset_game()
 
     def reset_game(self):
@@ -32,6 +34,7 @@ class PongGame:
                     self.state = constants.GameState.JOGANDO
                     self.score1, self.score2 = 0, 0
                     self.ball.reset(random.choice([-1, 1]))
+                    self.audio.start_bg_music()
                 elif self.state == constants.GameState.FIM_DE_JOGO:
                     self.state = constants.GameState.MENU
 
@@ -41,17 +44,24 @@ class PongGame:
             self.p1.move(keys[pygame.K_UP], keys[pygame.K_DOWN])
             self.p2.auto_move(self.ball.rect.centery)
             self.ball.update()
+            
+            if self.ball.update():
+                self.audio.play("hit_wall")
 
             if self.ball.rect.colliderect(self.p1.rect) and self.ball.vel_x < 0:
                 self.ball.bounce()
+                self.audio.play("hit_paddle")
             if self.ball.rect.colliderect(self.p2.rect) and self.ball.vel_x > 0:
                 self.ball.bounce()
+                self.audio.play("hit_paddle")
 
             if self.ball.rect.left < 0:
                 self.score2 += 1
+                self.audio.play("score")
                 self.ball.reset(1)
             elif self.ball.rect.right > constants.LARGURA_TELA:
                 self.score1 += 1
+                self.audio.play("score")
                 self.ball.reset(-1)
 
             if self.score1 >= constants.PONTOS_PARA_VENCER or self.score2 >= constants.PONTOS_PARA_VENCER:
@@ -65,6 +75,8 @@ class PongGame:
             if self.state == constants.GameState.MENU:
                 self.renderer.draw_menu()
             elif self.state == constants.GameState.JOGANDO:
+                if not pygame.mixer.music.get_busy():
+                    self.audio.start_bg_music()
                 self.renderer.draw_game(self.p1, self.p2, self.ball, self.score1, self.score2)
             elif self.state == constants.GameState.FIM_DE_JOGO:
                 winner = "Jogador 1" if self.score1 >= constants.PONTOS_PARA_VENCER else "Robot"
