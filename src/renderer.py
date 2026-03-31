@@ -7,12 +7,14 @@ class Renderer:
         self.font_score = pygame.font.Font(None, 50)
         self.font_text = pygame.font.Font(None, 36)
 
-    def draw_game(self, p1, p2, ball, score1, score2):
+    def draw_game(self, p1, p2, balls, score1, score2):
         self.screen.fill(constants.COR_FUNDO)
         pygame.draw.aaline(self.screen, constants.COR_ELEMENTOS, (constants.LARGURA_TELA // 2, 0), (constants.LARGURA_TELA // 2, constants.ALTURA_TELA))
         pygame.draw.rect(self.screen, constants.COR_ELEMENTOS, p1.rect)
         pygame.draw.rect(self.screen, constants.COR_ELEMENTOS, p2.rect)
-        pygame.draw.ellipse(self.screen, constants.COR_ELEMENTOS, ball.rect)
+        
+        for ball in balls:
+            pygame.draw.ellipse(self.screen, ball.color, ball.rect)
         
         score_text = self.font_score.render(f"{score1}   {score2}", True, constants.COR_ELEMENTOS)
         self.screen.blit(score_text, score_text.get_rect(center=(constants.LARGURA_TELA // 2, 40)))
