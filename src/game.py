@@ -36,9 +36,7 @@ class PongGame:
                 if self.state == constants.GameState.MENU:
                     self.state = constants.GameState.JOGANDO
                     self.score1, self.score2 = 0, 0
-                    self.balls = [Ball()]
-                    self.balls[0].reset(random.choice([-1, 1]))
-                    self.audio.start_bg_music()
+                    self.ball.reset(random.choice([-1, 1]))
                 elif self.state == constants.GameState.FIM_DE_JOGO:
                     self.state = constants.GameState.MENU
 
@@ -55,46 +53,20 @@ class PongGame:
         if self.state == constants.GameState.JOGANDO:
             keys = pygame.key.get_pressed()
             self.p1.move(keys[pygame.K_UP], keys[pygame.K_DOWN])
-            
-            real_ball = next((b for b in self.balls if b.is_real), self.balls[0])
-            self.p2.auto_move(real_ball.rect.centery)
+            self.p2.auto_move(self.ball.rect.centery)
+            self.ball.update()
 
-            current_time = time.time()
-            
-            for ball in self.balls[:]:
-                if ball.update():
-                    self.audio.play("hit_wall")
+            if self.ball.rect.colliderect(self.p1.rect) and self.ball.vel_x < 0:
+                self.ball.bounce()
+            if self.ball.rect.colliderect(self.p2.rect) and self.ball.vel_x > 0:
+                self.ball.bounce()
 
-                if ball.rect.colliderect(self.p1.rect) and ball.vel_x < 0:
-                    ball.bounce()
-                    self.audio.play("hit_paddle")
-                    
-                    if current_time - self.last_powerup_time >= 5:
-                        self.spawn_distractions(ball)
-                        self.last_powerup_time = current_time
-
-                if ball.rect.colliderect(self.p2.rect) and ball.vel_x > 0:
-                    ball.bounce()
-                    self.audio.play("hit_paddle") 
-
-                if ball.rect.left < 0:
-                    if ball.is_real:
-                        self.score2 += 1
-                        self.audio.play("score") 
-                        self.balls = [Ball()] 
-                        self.balls[0].reset(1)
-                        break
-                    else:
-                        self.balls.remove(ball)
-                elif ball.rect.right > constants.LARGURA_TELA:
-                    if ball.is_real:
-                        self.score1 += 1
-                        self.audio.play("score")
-                        self.balls = [Ball()] 
-                        self.balls[0].reset(-1)
-                        break
-                    else:
-                        self.balls.remove(ball)
+            if self.ball.rect.left < 0:
+                self.score2 += 1
+                self.ball.reset(1)
+            elif self.ball.rect.right > constants.LARGURA_TELA:
+                self.score1 += 1
+                self.ball.reset(-1)
 
             if self.score1 >= constants.PONTOS_PARA_VENCER or self.score2 >= constants.PONTOS_PARA_VENCER:
                 self.state = constants.GameState.FIM_DE_JOGO
