@@ -27,8 +27,8 @@ class Paddle:
 class Ball:
     def __init__(self, color=constants.COR_ELEMENTOS, is_real=True):
         self.rect = pygame.Rect(0, 0, constants.TAMANHO_BOLA, constants.TAMANHO_BOLA)
-        self.color = color 
-        self.is_real = is_real  
+        self.color = color  
+        self.is_real = is_real
         self.vel_x = 0
         self.vel_y = 0
         self.reset(1)
